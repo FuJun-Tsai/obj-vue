@@ -1,0 +1,126 @@
+<template>
+  <div class="container mt-5">
+    <div class="row mb-5">
+      <div class="col-md-2">
+        <ul class="d-flex flex-column p-0 sticky-top">
+          <li class="">產品分類</li>
+          <li
+          v-for="(item) in kinds"
+          :key="item"
+          :id="item"
+          @click="nowkinds=item,kindSearch()"
+          class="btn btn-outline-primary mb-3"
+          :class="{active:nowkinds===item}">{{item}}</li>
+        </ul>
+      </div>
+      <div class="col-md-8">
+        <div class="row">
+          <div class="col-md-6 col-12 mb-3 radius-24"
+            v-for="(item) in nowdata"
+            :key="item">
+            <div class="position-relative p-4 border h-100 card">
+              <img
+              :src="item.imageUrl" alt="">
+              <h4 class="text-center mb-3 text-primary">{{item.title}}</h4>
+              <p class="pb-3">{{item.content}}</p>
+              <div class="row mb-3 mt-3 btns">
+                <div class="col-12">
+                  <h5 class="price text-end">NT$.{{item.price}}／{{item.unit}}</h5>
+                </div>
+                <div class="col-12 d-flex justify-content-end">
+                  <div
+                  @click="toSingleProduct(item.id)"
+                  class="btn btn-outline-primary me-4">查看詳細</div>
+                  <div class="btn btn-primary">加入購物車</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  data () {
+    return {
+      origin_data: [],
+      kinds: [],
+      nowkinds: [],
+      nowdata: [],
+      page: 1
+    }
+  },
+  methods: {
+    // 取得資料
+    gatData () {
+      const api = `${process.env.VUE_APP_API}/api/${process.env.VUE_APP_PATH}/products/all`
+      this.$http.get(api).then((res) => {
+        this.origin_data = [...res.data.products]
+        this.nowdata = this.origin_data
+      })
+    },
+    // 取得資料，分析後組成新陣列
+    getKinds () {
+      const api = `${process.env.VUE_APP_API}/api/${process.env.VUE_APP_PATH}/products/all`
+      this.$http.get(api).then((res) => {
+        res.data.products.filter((item) => {
+          if (this.kinds.indexOf(item.category) === -1) {
+            return this.kinds.push(item.category)
+          }
+        })
+      })
+    },
+    // 透過分類按鈕篩選商品
+    kindSearch () {
+      if (this.nowkinds.length === 0) {
+        this.nowdata = this.origin_data
+      } else {
+        this.nowdata = this.origin_data.filter((item) => {
+          return item.category === this.nowkinds
+        })
+      }
+    },
+    // 前往單一商品頁
+    toSingleProduct (id) {
+      this.$router.push(`/product/${id}`)
+    }
+  },
+  created () {
+    this.gatData()
+    this.getKinds()
+  }
+}
+</script>
+
+<style lang="scss">
+  .price{
+    font-size: 20px;
+  }
+  img{
+    display: block;
+    width: 80%;
+    margin: 0 auto;
+    object-fit: cover;
+  }
+  .card{
+    position: relative;
+    padding-bottom: 70px !important;
+    .btns{
+      position: absolute;
+      bottom: 0;
+      right: 15px;
+    }
+  }
+  p{
+    text-align: justify;
+  }
+  ul{
+    list-style: none;
+  }
+  .sticky-top{
+    top: 60px;
+  }
+</style>
