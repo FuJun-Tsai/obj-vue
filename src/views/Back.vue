@@ -1,5 +1,5 @@
 <template>
-  <ToastMessage></ToastMessage>
+  <ToastMessages></ToastMessages>
     <header>
       <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark d-flex justify-content-between">
         <a class="nav-link" href="#/back">後台</a>
@@ -38,21 +38,21 @@
 </template>
 
 <script>
+import ToastMessages from '../components/ToastMessages.vue'
 import emitter from '../methods/emitter'
-import ToastMessage from '../components/ToastMessages.vue'
 
 export default {
   components: {
-    ToastMessage
-  },
-  data () {
-    return {
-      openNav: false
-    }
+    ToastMessages
   },
   provide () {
     return {
       emitter
+    }
+  },
+  data () {
+    return {
+      openNav: false
     }
   },
   created () {
@@ -65,9 +65,6 @@ export default {
         // this.$router.push('/back/login')
       }
     })
-  },
-  mounted () {
-    console.log(this)
   }
 }
 </script>

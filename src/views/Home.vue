@@ -21,6 +21,9 @@
             <li class="nav-item">
               <router-link class="nav-link ms-3 me-3" to="/shop">商城</router-link>
             </li>
+            <li class="nav-item">
+              <router-link class="nav-link ms-3 me-3" to="/cart">購物車</router-link>
+            </li>
           </ul>
         </div>
       </nav>
@@ -63,21 +66,6 @@ export default {
 
 body{
   padding-top: 56px
-}
-
-.banner{
-  position: relative;
-  padding: 0;
-  height: 100vh;
-  width: 100%;
-  max-height: calc(100vh - 56px);
-  object-fit: cover;
-  background-attachment: fixed;
-  background-image: url('../assets/pic/banner.jpg');
-  background-size: cover;
-  h1{
-      color: #fff;
-  }
 }
 
 footer{

@@ -18,11 +18,45 @@ export default {
   },
   inject: ['emitter'],
   mounted () {
-    // 請自行補上 emitter 事件
-    this.emitter.on('emit-message', (info) => {
+    this.emitter.on('emit-toastMessage', (info) => {
       const { style = 'success', title, content } = info
       this.messages.push({ style, title, content })
     })
   }
 }
 </script>
+
+<!--
+<template>
+  <div class="toast-container position-absolute top-1 end-0 p-3">
+    <Toast v-for="(item, key) in messages"
+          :key="key"
+          :msg="item"></Toast>
+  </div>
+</template>
+
+<script>
+import Toast from './Toast.vue'
+
+export default {
+  inject: [
+    'emitter'
+  ],
+  components: {
+    Toast
+  },
+  data () {
+    return {
+      messages: []
+    }
+  },
+  mounted () {
+    this.emitter.on('emit-toastMessage', (updateinfo) => {
+      console.log(updateinfo)
+      const { style, title, content } = updateinfo
+      this.messages.push({ style, title, content })
+    })
+  }
+}
+</script>
+-->

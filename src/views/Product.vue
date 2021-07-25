@@ -22,7 +22,14 @@
                 min="1"
                 type="number" class="form-control">
               </div>
-              <div class="btn btn-outline-primary me-2">加入購物車</div>
+              <div @click="addCart(data.id)"
+                   class="btn btn-outline-primary me-2">
+                <div v-if="this.loadingItem === data.id"
+                     class="spinner-grow text-danger spinner-grow-sm" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+                   加入購物車
+              </div>
               <div class="btn btn-primary">結帳</div>
             </div>
           </div>
@@ -36,27 +43,44 @@
           <div class="row d-none d-lg-block">
             <div class="col-12">
               <div class="quantity">
-                <div
-                @click="qua+=1"
-                class="btn btn-primary me-3 d-block d-md-none">+1</div>
-                <div
-                @click="qua+=5"
-                class="btn btn-primary me-3 d-block d-md-none">+5</div>
                 <div class="input-group">
                   <span class="input-group-text">數量</span>
-                  <input
-                  v-model.Number="qua"
-                  min="1"
-                  type="number" class="form-control">
+                  <input v-model.Number="qua"
+                         min="1" type="number" class="form-control">
                 </div>
               </div>
               <h5 class="text-end">NT.${{data.price}}／{{data.unit}}</h5>
             </div>
             <div class="col-12 d-flex justify-content-end">
-              <div class="btn btn-outline-primary me-4">加入購物車</div>
+              <div @click="addCart(data.id)"
+                   class="btn btn-outline-primary me-4">
+                <div v-if="this.loadingItem === data.id"
+                     class="spinner-grow text-danger spinner-grow-sm" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+                加入購物車
+              </div>
               <div class="btn btn-primary">結帳</div>
             </div>
           </div>
+      </div>
+    </div>
+    <div class="row mb-5">
+      <h2 class="mb-5">更多商品</h2>
+      <div v-for="(item,index) in more" :key="index"
+           class="col-md-4 col-12">
+        <div class="p-4 border h-100 card mb-5">
+          <img :src="item.imageUrl"
+               class="card-img-top">
+          <div class="card-body">
+            <h5 class="card-title mb-5">{{item.title}}</h5>
+            <h5 class="text-end">
+              NT.${{item.price}}／{{item.unit}}
+              <a @click.prevent="toProduct(item)"
+                 class="btn btn-primary">查看更多</a>
+            </h5>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -67,7 +91,11 @@ export default {
   data () {
     return {
       data: {},
-      qua: 1
+      qua: 1,
+      more: [],
+      nowCategory: '',
+      nowId: '',
+      loadingItem: ''
     }
   },
   methods: {
@@ -76,15 +104,40 @@ export default {
       this.$http.get(api).then((res) => {
         if (res.data.success === true) {
           this.data = res.data.product
+          this.nowCategory = res.data.product.category
+          this.nowId = res.data.product.id
         } else {
           this.$router.push('/shop')
         }
+        this.moreProducts()
+      })
+    },
+    moreProducts () {
+      const moreapi = `${process.env.VUE_APP_API}/api/${process.env.VUE_APP_PATH}/products/all`
+      this.$http.get(moreapi).then((res) => {
+        this.more = [...res.data.products].filter((item) => {
+          return item.category === this.nowCategory && item.id !== this.nowId
+        })
+      })
+    },
+    toProduct (item) {
+      this.$router.push(`/product/${item.id}`)
+    },
+    addCart (id) {
+      const api = `${process.env.VUE_APP_API}/api/${process.env.VUE_APP_PATH}/cart`
+      this.loadingItem = id
+      const cart = {
+        product_id: id,
+        qty: parseInt(this.qua)
+      }
+      this.$http.post(api, { data: cart }).then((res) => {
+        this.loadingItem = ''
+        console.log(res)
       })
     }
   },
   created () {
     this.getData()
-    console.log(this.$route)
   }
 }
 </script>

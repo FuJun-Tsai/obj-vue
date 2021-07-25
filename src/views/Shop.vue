@@ -2,20 +2,25 @@
   <div class="container mt-5">
     <div class="row mb-5">
       <div class="col-md-2">
-        <ul class="d-flex flex-column p-0 sticky-top">
-          <li class="">產品分類</li>
-          <li
-          v-for="(item) in kinds"
-          :key="item"
-          :id="item"
-          @click="nowkinds=item,kindSearch()"
-          class="btn btn-outline-primary mb-3"
-          :class="{active:nowkinds===item}">{{item}}</li>
-        </ul>
+        <div class="sticky-top">
+          <div class="col-12 mb-3">
+            <router-link to="/wants">首頁</router-link>／<span>商品一覽</span>
+          </div>
+          <ul class="d-flex flex-column p-3 border">
+            <li class="text-center mb-3">產品分類</li>
+            <li
+            v-for="(item) in kinds"
+            :key="item"
+            :id="item"
+            @click="nowkinds=item,kindSearch()"
+            class="btn btn-outline-primary mb-3"
+            :class="{active:nowkinds===item}">{{item}}</li>
+          </ul>
+        </div>
       </div>
-      <div class="col-md-8">
+      <div class="col-md-10">
         <div class="row">
-          <div class="col-md-6 col-12 mb-3 radius-24"
+          <div class="col-lg-4 col-sm-6 col-12 mb-3 radius-24"
             v-for="(item) in nowdata"
             :key="item">
             <div class="position-relative p-4 border h-100 card">
@@ -28,10 +33,18 @@
                   <h5 class="price text-end">NT$.{{item.price}}／{{item.unit}}</h5>
                 </div>
                 <div class="col-12 d-flex justify-content-end">
-                  <div
-                  @click="toSingleProduct(item.id)"
-                  class="btn btn-outline-primary me-4">查看詳細</div>
-                  <div class="btn btn-primary">加入購物車</div>
+                  <div @click="toSingleProduct(item.id)"
+                       class="btn btn-outline-primary me-4">查看詳細
+                  </div>
+                  <div @click="addCart(item.id)"
+                       :disabled="this.loadingItem === item.id"
+                       class="btn btn-primary">
+                    <div v-if="this.loadingItem === item.id"
+                         class="spinner-grow text-danger spinner-grow-sm" role="status">
+                      <span class="visually-hidden">Loading...</span>
+                    </div>
+                       加入購物車
+                  </div>
                 </div>
               </div>
             </div>
@@ -50,7 +63,8 @@ export default {
       kinds: [],
       nowkinds: [],
       nowdata: [],
-      page: 1
+      page: 1,
+      loadingItem: ''
     }
   },
   methods: {
@@ -86,6 +100,19 @@ export default {
     // 前往單一商品頁
     toSingleProduct (id) {
       this.$router.push(`/product/${id}`)
+    },
+    // 加入購物車
+    addCart (id) {
+      const api = `${process.env.VUE_APP_API}/api/${process.env.VUE_APP_PATH}/cart`
+      this.loadingItem = id
+      const cart = {
+        product_id: id,
+        qty: 1
+      }
+      this.$http.post(api, { data: cart }).then((res) => {
+        this.loadingItem = ''
+        console.log(res)
+      })
     }
   },
   created () {
@@ -119,6 +146,10 @@ export default {
   }
   ul{
     list-style: none;
+    li{
+      &:first-child{
+      }
+    }
   }
   .sticky-top{
     top: 60px;

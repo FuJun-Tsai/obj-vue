@@ -6,10 +6,12 @@
 
 <script>
 export default {
+  inject: [
+    'emitter'
+  ],
   methods: {
     openModal () {
-      console.log('open')
-      this.$emit('emit-openModal')
+      this.$emit('emit-openNewModal')
     }
   }
 }

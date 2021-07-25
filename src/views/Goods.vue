@@ -1,15 +1,24 @@
 <template>
   <loading :active="isLoading"></loading>
-  <button @click="openForm(true)">btn</button>
   <table class="table mt-4">
     <thead>
       <tr>
-        <th width="120">分類</th>
-        <th>產品名稱</th>
-        <th width="120">原價</th>
-        <th width="120">售價</th>
-        <th width="110">是否啟用</th>
-        <th width="200">編輯</th>
+        <th width="120">
+          <span>分類</span>
+        </th>
+        <th width="120">產品名稱</th>
+        <th width="120">
+          <span>原價</span>
+        </th>
+        <th width="120">
+          <span>售價</span>
+        </th>
+        <th width="110">
+          <span>是否啟用</span>
+        </th>
+        <th width="50">
+          <span>編輯</span>
+        </th>
       </tr>
     </thead>
     <tbody>
@@ -29,7 +38,7 @@
                 class="text-success">啟用</span>
           <span v-else
                 class="text-danger">未啟用</span>
-          <div class="form-check form-switch d-inline-block  position-absolute top-50 end-0 translate-middle-y">
+          <div class="form-check form-switch d-inline-block position-absolute top-50 end-0 translate-middle-y">
             <input :checked="item.is_enabled === 1"
                    @click="enabledButton(item)"
                    class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
@@ -58,7 +67,8 @@
   ref="delcheck"
   :nowData="temp"
   @emit-delitem="delItem"></Delmodal>
-  <Addbutton></Addbutton>
+  <Addbutton
+  @emit-openNewModal="openForm(true)"></Addbutton>
 </template>
 
 <script>
@@ -68,6 +78,9 @@ import Delmodal from '../components/DelModal'
 import Addbutton from '../components/AddButton'
 
 export default {
+  inject: [
+    'emitter'
+  ],
   data () {
     return {
       data: [],
@@ -83,9 +96,6 @@ export default {
     Goodmodal,
     Delmodal
   },
-  inject: [
-    'emitter'
-  ],
   methods: {
     getData (page = 1) {
       this.isLoading = true
@@ -119,17 +129,26 @@ export default {
       this.$http[httpmethod](api, { data: this.temp }).then((res) => {
         this.isLoading = true
         this.$refs.modal.closeModal()
-        console.log(res.data.success)
+        console.log(this.temp)
         // emitter
         if (res.data.success) {
-          this.emitter.emit('emit-message', {
-            style: 'success',
-            title: '更新成功'
-          })
+          if (!this.isNew) {
+            this.emitter.emit('emit-toastMessage', {
+              title: '更新成功',
+              style: 'success',
+              content: `商品編號 ${this.temp.id} 已更新`
+            })
+          } else {
+            this.emitter.emit('emit-toastMessage', {
+              title: '更新成功',
+              style: 'success',
+              content: '建立新商品'
+            })
+          }
         } else {
-          this.emitter.emit('emit-message', {
-            style: 'danger',
+          this.emitter.emit('emit-toastMessage', {
             title: '更新失敗',
+            style: 'danger',
             content: res.data.message.join(',')
           })
         }
@@ -144,6 +163,11 @@ export default {
       const api = `${process.env.VUE_APP_API}/api/${process.env.VUE_APP_PATH}/admin/product/${this.temp.id}`
       this.$http.put(api, { data: this.temp }).then((res) => {
         console.log(res)
+        this.emitter.emit('emit-toastMessage', {
+          title: '更新成功',
+          style: 'success',
+          content: `ID編號 ${this.temp.id} 已更新`
+        })
       })
     },
     delCheck (item) {
@@ -151,13 +175,17 @@ export default {
       this.$refs.delcheck.openModal()
     },
     delItem () {
-      console.log(this.temp)
       const api = `${process.env.VUE_APP_API}/api/${process.env.VUE_APP_PATH}/admin/product/${this.temp.id}`
       this.$http.delete(api).then((res) => {
         this.isLoading = true
         console.log(res)
         this.$refs.delcheck.closeModal()
         this.getData()
+        this.emitter.emit('emit-toastMessage', {
+          title: '更新成功',
+          style: 'success',
+          content: `ID編號 ${this.temp.id} 已刪除`
+        })
         this.isLoading = false
       })
     }
