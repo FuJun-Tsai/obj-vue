@@ -1,4 +1,4 @@
-<template>
+<template class>
   <div class="container mt-5">
     <div class="row mb-5">
       <div class="col-md-2">
@@ -6,7 +6,7 @@
           <div class="col-12 mb-3">
             <router-link to="/wants">首頁</router-link>／<span>商品一覽</span>
           </div>
-          <ul class="d-flex flex-column p-3 border">
+          <ul class="d-flex flex-column p-3 border bg-white">
             <li class="text-center mb-3">產品分類</li>
             <li
             v-for="(item) in kinds"
@@ -68,18 +68,12 @@ export default {
     }
   },
   methods: {
-    // 取得資料
+    // 取得後端資料，一份商資料，一份商品分類
     gatData () {
       const api = `${process.env.VUE_APP_API}/api/${process.env.VUE_APP_PATH}/products/all`
       this.$http.get(api).then((res) => {
         this.origin_data = [...res.data.products]
         this.nowdata = this.origin_data
-      })
-    },
-    // 取得資料，分析後組成新陣列
-    getKinds () {
-      const api = `${process.env.VUE_APP_API}/api/${process.env.VUE_APP_PATH}/products/all`
-      this.$http.get(api).then((res) => {
         res.data.products.filter((item) => {
           if (this.kinds.indexOf(item.category) === -1) {
             return this.kinds.push(item.category)
@@ -117,7 +111,6 @@ export default {
   },
   created () {
     this.gatData()
-    this.getKinds()
   }
 }
 </script>

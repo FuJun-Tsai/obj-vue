@@ -38,7 +38,7 @@
             </div>
             <div>
               <p>此網頁為作品用途，無任何金流及商業用途</p>
-              <p>圖源、文案來自<a href="https://petpetgo.com/">毛孩市集</a></p>
+              <p>圖源、文案來自 <a class="font-black" href="https://petpetgo.com/">毛孩市集</a></p>
             </div>
           </div>
         </div>
@@ -69,7 +69,13 @@ body{
 }
 
 footer{
-  background: var(--bs-primary)
+  background: var(--bs-primary);
+  a{
+    color: #333;
+    &:hover{
+      color: #111;
+    }
+  }
 }
 
 html{

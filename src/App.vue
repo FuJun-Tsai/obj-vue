@@ -4,6 +4,9 @@
 
 <style lang="scss">
 @import "./assets/all.scss";
+body{
+  background: url('./assets/pic/sakura.png') repeat center/contain;
+}
 img{
   width: 100%;
 }
@@ -15,7 +18,7 @@ p{
   text-align: justify;
 }
 .text-primary{
-    color: var(--bs-primary);
+  color: var(--bs-primary);
 }
 .back-primary{
   background: var(--bs-primary);
